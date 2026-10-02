@@ -1,0 +1,24 @@
+<mat-toolbar color="primary">
+  <span>Loja Guaraná</span>
+  <span class="spacer"></span>
+  <button mat-button type="button" (click)="logout()">Sair</button>
+</mat-toolbar>
+
+<main class="products">
+  @for (product of products; track product.id) {
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ product.name }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ product.description }}</p>
+        <p class="price">{{ product.price | currency: 'BRL' }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button type="button" (click)="addToCart(product)">
+          Adicionar ao Carrinho
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</main>
