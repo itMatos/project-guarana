@@ -1,16 +1,17 @@
 import { getResponse } from 'msw';
+import { environment } from '../environments/environment';
 import { handlers } from './handlers';
 
 const login = (body: object) =>
   getResponse(
     handlers,
-    new Request(`${location.origin}/api/login`, { method: 'POST', body: JSON.stringify(body) }),
+    new Request(`${location.origin}${environment.apiEndpoints.auth.login}`, { method: 'POST', body: JSON.stringify(body) }),
   );
 
 const products = (token?: string) =>
   getResponse(
     handlers,
-    new Request(`${location.origin}/api/products`, {
+    new Request(`${location.origin}${environment.apiEndpoints.product.products}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     }),
   );

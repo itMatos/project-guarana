@@ -36,3 +36,25 @@
     </mat-card-actions>
   </form>
 </mat-card>
+
+@if (showCredentials) {
+  <mat-card class="credentials-card" appearance="outlined">
+    <mat-card-content class="credentials">
+      <section>
+        <h3>Usuários aceitos:</h3>
+        <mat-list dense>
+          @for (name of mockUsernames; track name) {
+            <mat-list-item>{{ name }}</mat-list-item>
+          }
+        </mat-list>
+      </section>
+
+      <section>
+        <h3>Senha para todos os usuários:</h3>
+        <mat-list dense>
+          <mat-list-item>{{ mockPassword }}</mat-list-item>
+        </mat-list>
+      </section>
+    </mat-card-content>
+  </mat-card>
+}

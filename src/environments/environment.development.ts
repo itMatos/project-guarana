@@ -9,6 +9,9 @@ export const environment = {
     },
     user: {
       user: `${apiUrl}/user`
+    },
+    product: {
+      products: `${apiUrl}/products`
     }
   }
 };
