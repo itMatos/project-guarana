@@ -5,7 +5,7 @@
 </mat-toolbar>
 
 <main class="products">
-  @for (product of products; track product.id) {
+  @for (product of products(); track product.id) {
     <mat-card appearance="outlined">
       <mat-card-header>
         <mat-card-title>{{ product.name }}</mat-card-title>

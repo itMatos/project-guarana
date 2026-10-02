@@ -1,16 +1,13 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-}
+import { ProductApiService } from '../../../core/api/product/product-api.service';
+import { Product } from '../../../shared/models/product.model';
+import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-product-list',
@@ -18,23 +15,32 @@ interface Product {
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
 })
-export class ProductListComponent {
-  constructor(private readonly router: Router) {}
+export class ProductListComponent implements OnInit {
+  readonly products = signal<Product[]>([]);
 
-  readonly products: Product[] = [
-    { id: 1, name: 'Mochila Sauce Labs', description: 'Mochila resistente com compartimento para notebook.', price: 129.99 },
-    { id: 2, name: 'Lanterna de Bicicleta', description: 'Luz LED potente para pedalar com segurança à noite.', price: 49.99 },
-    { id: 3, name: 'Camiseta Sauce Labs', description: 'Camiseta de algodão macio com estampa exclusiva.', price: 15.99 },
-    { id: 4, name: 'Jaqueta Fleece', description: 'Jaqueta de fleece leve e quentinha para o inverno.', price: 49.99 },
-    { id: 5, name: 'Body de Bebê', description: 'Body de algodão confortável para os pequenos.', price: 7.99 },
-    { id: 6, name: 'Camiseta Vermelha', description: 'Camiseta vermelha clássica com logo bordado.', price: 15.99 },
-  ];
+  constructor(
+    private readonly router: Router,
+    private readonly auth: AuthService,
+    private readonly productApi: ProductApiService,
+  ) {}
+
+  ngOnInit(): void {
+    this.productApi.getProducts().subscribe({
+      next: (products) => this.products.set(products),
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          this.logout();
+        }
+      },
+    });
+  }
 
   addToCart(product: Product): void {
     console.log('Adicionado ao carrinho:', product);
   }
 
   logout(): void {
+    this.auth.logout();
     this.router.navigate(['/login']);
   }
 }

@@ -7,7 +7,13 @@
     <mat-card-content>
       <mat-form-field appearance="outline">
         <mat-label>Usuário</mat-label>
-        <input matInput name="username" [(ngModel)]="username" autocomplete="username" />
+        <input
+          matInput
+          name="username"
+          data-test="username"
+          [(ngModel)]="username"
+          autocomplete="username"
+        />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -16,6 +22,7 @@
           matInput
           type="password"
           name="password"
+          data-test="password"
           [(ngModel)]="password"
           autocomplete="current-password"
         />
@@ -23,7 +30,9 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-flat-button color="primary" type="submit">Entrar</button>
+      <button mat-flat-button color="primary" type="submit" data-test="login-button">
+        Entrar
+      </button>
     </mat-card-actions>
   </form>
 </mat-card>
