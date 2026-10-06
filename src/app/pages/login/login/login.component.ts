@@ -13,17 +13,9 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [
-    FormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatListModule,
-    MatSnackBarModule,
-  ],
+  imports: [FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatListModule, MatSnackBarModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   username = '';
@@ -34,14 +26,14 @@ export class LoginComponent implements OnInit {
   readonly mockPassword = MOCK_PASSWORD;
 
   constructor(
-    private readonly auth: AuthService,
+    private readonly authService: AuthService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly snackBar: MatSnackBar,
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    if (this.auth.isLoggedIn()) {
+    if (this.authService.isLoggedIn()) {
       this.router.navigate(['/store/products']);
       return;
     }
@@ -53,7 +45,7 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
-    this.auth.login({ username: this.username, password: this.password });
+    this.authService.login({ username: this.username, password: this.password });
   }
 
   private showError(message: string): void {
