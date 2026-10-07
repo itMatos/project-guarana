@@ -16,15 +16,12 @@ export const authHandlers = [
       return HttpResponse.json({ message: 'Senha é obrigatória' }, { status: 400 });
     }
     if (!MOCK_USERNAMES.includes(username) || password !== MOCK_PASSWORD) {
-      return HttpResponse.json(
-        { message: 'Usuário e senha não correspondem a nenhum usuário' },
-        { status: 401 },
-      );
+      return HttpResponse.json({ message: 'Usuário e senha não correspondem a nenhum usuário' }, { status: 401 });
     }
     if (username === MOCK_USERS.LOCKED_OUT) {
-      return HttpResponse.json({ message: 'Este usuário foi bloqueado' }, { status: 403 });
+      return HttpResponse.json({ message: 'O acesso deste usuário foi bloqueado' }, { status: 403 });
     }
 
     return HttpResponse.json({ token: createToken(username), username });
-  }),
+  })
 ];
