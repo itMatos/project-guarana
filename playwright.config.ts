@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+import { STORAGE_STATE } from './e2e/setup/auth-files';
 
 if (existsSync('.env')) {
   process.loadEnvFile('.env');
@@ -32,7 +33,7 @@ export default defineConfig({
     {
       name: 'chromium',
       testMatch: /tests\/.*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], storageState: STORAGE_STATE },
       dependencies: ['setup'],
     },
   ],
