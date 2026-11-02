@@ -2,6 +2,12 @@
 
 A **Loja Guaraná** é um e-commerce de eletrônicos feito em **Angular**, com o backend simulado por **MSW** e coberto por testes unitários e **testes end-to-end (e2e)** com **Playwright**. O projeto também é desenvolvido com apoio de **inteligência artificial**: o repositório traz **skills** e **agentes de IA** do Claude Code que automatizam tarefas do dia a dia, como levantar requisitos, rodar os testes e revisar o padrão do código.
 
+Este é um repositório de **estudo**, criado para aprender e aplicar na prática conceitos de desenvolvimento front-end, testes e uso de IA no fluxo de trabalho.
+
+### Por que "Guaraná"?
+
+O guaraná é um fruto nativo da Amazônia, e seu nome vem do tupi-guarani *wara'ná*. Para os indígenas Sateré-Mawé, ele significa "a fonte de sabedoria", um nome que combina com um projeto feito para aprender.
+
 ## Funcionalidades
 
 - **Login** com sessão por usuário e rotas da loja protegidas.
