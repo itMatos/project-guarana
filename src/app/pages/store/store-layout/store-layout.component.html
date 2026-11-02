@@ -1,0 +1,17 @@
+<mat-toolbar color="primary">
+  <a class="brand" routerLink="/store/products">Loja Guaraná</a>
+  <span class="spacer"></span>
+  <a
+    mat-icon-button
+    routerLink="/store/cart"
+    aria-label="Carrinho"
+    [matBadge]="cart.totalQuantity()"
+    [matBadgeHidden]="!cart.totalQuantity()"
+    matBadgeColor="warn"
+  >
+    <mat-icon fontSet="material-symbols-outlined">shopping_cart</mat-icon>
+  </a>
+  <button mat-button type="button" (click)="logout()">Sair</button>
+</mat-toolbar>
+
+<router-outlet />

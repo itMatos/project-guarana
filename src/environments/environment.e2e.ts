@@ -12,6 +12,10 @@ export const environment = {
     },
     product: {
       products: `${apiUrl}/products`
+    },
+    cart: {
+      cart: `${apiUrl}/cart`,
+      items: `${apiUrl}/cart/items`
     }
   }
 };

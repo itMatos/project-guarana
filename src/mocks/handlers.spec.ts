@@ -5,16 +5,38 @@ import { handlers } from './handlers';
 const login = (body: object) =>
   getResponse(
     handlers,
-    new Request(`${location.origin}${environment.apiEndpoints.auth.login}`, { method: 'POST', body: JSON.stringify(body) }),
+    new Request(`${location.origin}${environment.apiEndpoints.auth.login}`, { method: 'POST', body: JSON.stringify(body) })
   );
 
 const products = (token?: string) =>
   getResponse(
     handlers,
     new Request(`${location.origin}${environment.apiEndpoints.product.products}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    }),
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
   );
+
+const TOKEN = 'mock-token-standard_user';
+
+const cartRequest = (path: string, init: RequestInit = {}, token: string | undefined = TOKEN) =>
+  getResponse(
+    handlers,
+    new Request(`${location.origin}${path}`, {
+      ...init,
+      headers: token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : {}
+    })
+  );
+
+const { cart: CART, items: ITEMS } = environment.apiEndpoints.cart;
+const addItem = (productId: number, token?: string) =>
+  cartRequest(ITEMS, { method: 'POST', body: JSON.stringify({ productId }) }, token);
+const setQuantity = (productId: number, quantity: number) =>
+  cartRequest(`${ITEMS}/${productId}`, { method: 'PUT', body: JSON.stringify({ quantity }) });
+const quantities = async (res: Response | undefined) =>
+  ((await res?.json()) as { items: { product: { id: number }; quantity: number }[] }).items.map((item) => [
+    item.product.id,
+    item.quantity
+  ]);
 
 describe('MSW handlers', () => {
   it('requires a username', async () => {
@@ -42,7 +64,7 @@ describe('MSW handlers', () => {
     expect(res?.status).toBe(200);
     expect(await res?.json()).toEqual({
       token: 'mock-token-standard_user',
-      username: 'standard_user',
+      username: 'standard_user'
     });
   });
 
@@ -62,4 +84,71 @@ describe('MSW handlers', () => {
       expect(list.filter((product) => product.category === category)).toHaveLength(3);
     }
   });
+
+  describe('cart', () => {
+    beforeEach(() => localStorage.clear());
+
+    it('denies the cart without a token', async () => {
+      expect((await cartRequest(CART, {}, ''))?.status).toBe(401);
+    });
+
+    it('starts with an empty cart', async () => {
+      expect(await quantities(await cartRequest(CART))).toEqual([]);
+    });
+
+    it('adds products from different categories and sums repeated ones', async () => {
+      await addItem(1);
+      await addItem(4);
+      const res = await addItem(1);
+
+      expect(res?.status).toBe(200);
+      expect(await quantities(res)).toEqual([
+        [1, 2],
+        [4, 1]
+      ]);
+    });
+
+    it('rejects an unknown product', async () => {
+      expect((await addItem(999))?.status).toBe(404);
+    });
+
+    it('does not go past 10 units of a product', async () => {
+      await setQuantityAfterAdding(1, 10);
+
+      const res = await addItem(1);
+      expect(res?.status).toBe(400);
+      expect(await res?.json()).toEqual({ message: 'Limite de 10 unidades por produto' });
+      expect((await setQuantity(1, 11))?.status).toBe(400);
+    });
+
+    it('rejects a quantity below one', async () => {
+      await addItem(1);
+      expect((await setQuantity(1, 0))?.status).toBe(400);
+    });
+
+    it('removes a product', async () => {
+      await addItem(1);
+      await addItem(4);
+
+      const res = await cartRequest(`${ITEMS}/1`, { method: 'DELETE' });
+      expect(await quantities(res)).toEqual([[4, 1]]);
+    });
+
+    it('saves the cart under the user, so it survives reloads and logout', async () => {
+      localStorage.setItem('guarana-mock-carts', JSON.stringify({ someone_else: [{ productId: 7, quantity: 3 }] }));
+
+      await addItem(1);
+
+      expect(JSON.parse(localStorage.getItem('guarana-mock-carts')!)).toEqual({
+        someone_else: [{ productId: 7, quantity: 3 }],
+        standard_user: [{ productId: 1, quantity: 1 }]
+      });
+      expect(await quantities(await cartRequest(CART))).toEqual([[1, 1]]);
+    });
+  });
 });
+
+async function setQuantityAfterAdding(productId: number, quantity: number): Promise<void> {
+  await addItem(productId);
+  await setQuantity(productId, quantity);
+}

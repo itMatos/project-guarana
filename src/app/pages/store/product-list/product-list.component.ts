@@ -7,18 +7,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { map } from 'rxjs';
 import { ProductApiService } from '../../../core/api/product/product-api.service';
 import { Product, PRODUCT_CATEGORIES } from '../../../shared/models/product.model';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { CartService } from '../../../core/services/cart/cart.service';
 
 /** Query param que guarda a aba ativa, para a categoria sobreviver ao F5 e poder ser linkada. */
 const CATEGORY_PARAM = 'categoria';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CurrencyPipe, MatToolbarModule, MatTabsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [CurrencyPipe, MatTabsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -27,6 +27,7 @@ export class ProductListComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
   private readonly productApi = inject(ProductApiService);
+  private readonly cart = inject(CartService);
 
   readonly products = signal<Product[]>([]);
   readonly loading = signal(true);
@@ -77,7 +78,7 @@ export class ProductListComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
-    console.log('Adicionado ao carrinho:', product);
+    this.cart.add(product);
   }
 
   logout(): void {

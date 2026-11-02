@@ -1,0 +1,71 @@
+<main class="cart">
+  <h1>Carrinho</h1>
+
+  @switch (cart.status()) {
+    @case ('loading') {
+      <mat-spinner class="loading" diameter="40" aria-label="Carregando carrinho"></mat-spinner>
+    }
+    @case ('error') {
+      <p class="message">Não foi possível carregar o carrinho.</p>
+      <button mat-stroked-button type="button" (click)="cart.load()">Tentar de novo</button>
+    }
+    @default {
+      @if (cart.items().length) {
+        <ul class="items">
+          @for (item of cart.items(); track item.product.id) {
+            <li class="item">
+              <div class="info">
+                <span class="name">{{ item.product.name }}</span>
+                <span class="details">
+                  {{ categoryLabel(item.product.category) }} · {{ item.product.price | currency: 'BRL' }}
+                </span>
+              </div>
+
+              <div class="quantity">
+                <button
+                  mat-icon-button
+                  type="button"
+                  [disabled]="item.quantity <= 1 || cart.pending()"
+                  [attr.aria-label]="'Diminuir quantidade de ' + item.product.name"
+                  (click)="cart.decrease(item)"
+                >
+                  <mat-icon fontSet="material-symbols-outlined">remove</mat-icon>
+                </button>
+                <output [attr.aria-label]="'Quantidade de ' + item.product.name">{{ item.quantity }}</output>
+                <button
+                  mat-icon-button
+                  type="button"
+                  [disabled]="cart.pending()"
+                  [attr.aria-label]="'Aumentar quantidade de ' + item.product.name"
+                  (click)="cart.increase(item)"
+                >
+                  <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+                </button>
+              </div>
+
+              <span class="subtotal">{{ item.product.price * item.quantity | currency: 'BRL' }}</span>
+
+              <button
+                mat-icon-button
+                type="button"
+                [disabled]="cart.pending()"
+                [attr.aria-label]="'Remover ' + item.product.name"
+                (click)="cart.remove(item)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+              </button>
+            </li>
+          }
+        </ul>
+
+        <p class="total">
+          Total
+          <strong>{{ cart.total() | currency: 'BRL' }}</strong>
+        </p>
+      } @else {
+        <p class="message">Seu carrinho está vazio.</p>
+        <a mat-flat-button routerLink="/store/products">Ver produtos</a>
+      }
+    }
+  }
+</main>

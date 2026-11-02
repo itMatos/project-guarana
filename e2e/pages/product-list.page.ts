@@ -2,11 +2,15 @@ import type { Locator, Page } from '@playwright/test';
 
 export class ProductListPage {
   readonly logoutButton: Locator;
+  readonly cartLink: Locator;
+  readonly cartBadge: Locator;
   readonly addToCartButtons: Locator;
   private readonly list: Locator;
 
   constructor(private readonly page: Page) {
     this.logoutButton = page.getByRole('button', { name: 'Sair' });
+    this.cartLink = page.getByRole('link', { name: 'Carrinho' });
+    this.cartBadge = this.cartLink.locator('.mat-badge-content');
     this.list = page.getByRole('main');
     // Cada produto renderiza exatamente um botão: serve para contar os itens.
     // Só a aba ativa fica no DOM, então a contagem é da categoria selecionada.
@@ -28,6 +32,10 @@ export class ProductListPage {
 
   async selectCategory(label: string): Promise<void> {
     await this.categoryTab(label).click();
+  }
+
+  async addToCart(name: string): Promise<void> {
+    await this.list.locator('mat-card').filter({ hasText: name }).getByRole('button', { name: 'Adicionar ao Carrinho' }).click();
   }
 
   product(name: string): Locator {

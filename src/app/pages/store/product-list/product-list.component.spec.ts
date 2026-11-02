@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { Subject } from 'rxjs';
 import { ProductApiService } from '../../../core/api/product/product-api.service';
+import { CartService } from '../../../core/services/cart/cart.service';
 import { Product } from '../../../shared/models/product.model';
 import { aProduct } from '../../../../testing/builders/product.builder';
 import { ProductListComponent } from './product-list.component';
@@ -20,7 +21,8 @@ describe('ProductListComponent', () => {
       imports: [ProductListComponent],
       providers: [
         provideRouter([{ path: 'products', component: ProductListComponent }]),
-        { provide: ProductApiService, useValue: { getProducts: () => response } }
+        { provide: ProductApiService, useValue: { getProducts: () => response } },
+        { provide: CartService, useValue: { add: vi.fn() } }
       ]
     }).compileComponents();
   });
