@@ -5,9 +5,22 @@
 </mat-toolbar>
 
 <main>
-  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+  <mat-tab-group
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    animationDuration="0ms"
+    [selectedIndex]="selectedIndex()"
+    (selectedIndexChange)="selectCategory($event)"
+  >
     @for (category of productsByCategory(); track category.id) {
-      <mat-tab [label]="category.label">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          {{ category.label }}
+          @if (!loading()) {
+            <span class="count">({{ category.products.length }})</span>
+          }
+        </ng-template>
+
         @if (loading()) {
           <mat-spinner class="loading" diameter="40" aria-label="Carregando produtos"></mat-spinner>
         } @else if (category.products.length) {
@@ -28,7 +41,7 @@
             }
           </div>
         } @else {
-          <p class="empty">Nenhum produto disponível nesta categoria.</p>
+          <p class="empty">Nenhum produto em {{ category.label }} no momento.</p>
         }
       </mat-tab>
     }
