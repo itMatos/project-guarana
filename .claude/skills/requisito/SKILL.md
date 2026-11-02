@@ -53,7 +53,11 @@ A criação da issue é pública e visível para quem acompanha o repositório. 
    git remote get-url origin | sed -E 's#^.*[:/]([^/]+/[^/]+)$#\1#; s#\.git$##'
    ```
 2. **Login**: rode `gh auth status`. Se não estiver logado, não tente contornar e não peça token. Diga para a pessoa rodar `gh auth login` e avisar quando terminar. O rascunho continua na conversa.
-3. **Label**: confira se a label `requisito` existe, com `gh label list --repo <owner/repo> --search requisito`. Se não existir, crie a issue sem label e pergunte se a pessoa quer criar a label depois. Não crie a label sem perguntar.
+3. **Label**: confira se a label `requisito` existe pelo nome exato. Não use `--search`, porque o índice de busca do GitHub demora a refletir labels novas:
+   ```bash
+   gh label list --repo <owner/repo> --limit 200 --json name --jq '.[].name' | grep -qx requisito && echo existe
+   ```
+   Se não existir, crie a issue sem label e pergunte se a pessoa quer criar a label depois. Não crie a label sem perguntar.
 4. **Criar**: salve o corpo num arquivo temporário e crie a issue:
    ```bash
    BODY=$(mktemp -t requisito) && cat > "$BODY" <<'EOF'
