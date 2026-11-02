@@ -17,6 +17,42 @@ test.describe('lista de produtos', () => {
     await expect(productListPage.product('Camiseta de Teste')).toBeVisible();
   });
 
+  test('separa os produtos nas abas de categoria', async ({ api, productListPage }) => {
+    api.setProducts([
+      aProduct().withId(1).withName('Celular de Teste').withCategory('celulares').build(),
+      aProduct().withId(2).withName('Notebook de Teste').withCategory('notebooks').build(),
+      aProduct().withId(3).withName('Outro Notebook de Teste').withCategory('notebooks').build(),
+      aProduct().withId(4).withName('Tablet de Teste').withCategory('tablets').build()
+    ]);
+
+    await productListPage.goto();
+
+    await expect(productListPage.categoryTab('Celulares')).toHaveAttribute('aria-selected', 'true');
+    await expect(productListPage.addToCartButtons).toHaveCount(1);
+    await expect(productListPage.product('Celular de Teste')).toBeVisible();
+
+    await productListPage.selectCategory('Notebooks');
+    await expect(productListPage.addToCartButtons).toHaveCount(2);
+    await expect(productListPage.product('Notebook de Teste')).toBeVisible();
+    await expect(productListPage.product('Outro Notebook de Teste')).toBeVisible();
+    await expect(productListPage.product('Celular de Teste')).toHaveCount(0);
+
+    await productListPage.selectCategory('Tablets');
+    await expect(productListPage.addToCartButtons).toHaveCount(1);
+    await expect(productListPage.product('Tablet de Teste')).toBeVisible();
+  });
+
+  test('exibe mensagem quando a categoria não tem produtos', async ({ api, productListPage }) => {
+    api.setProducts([aProduct().withId(1).withName('Celular de Teste').withCategory('celulares').build()]);
+
+    await productListPage.goto();
+    await expect(productListPage.product('Celular de Teste')).toBeVisible();
+
+    await productListPage.selectCategory('Tablets');
+    await expect(productListPage.addToCartButtons).toHaveCount(0);
+    await expect(productListPage.emptyCategoryMessage).toBeVisible();
+  });
+
   test('não exibe itens quando a API retorna lista vazia', async ({ page, api, productListPage }) => {
     api.setProducts([]);
 

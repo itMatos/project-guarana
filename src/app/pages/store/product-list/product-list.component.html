@@ -4,21 +4,31 @@
   <button mat-button type="button" (click)="logout()">Sair</button>
 </mat-toolbar>
 
-<main class="products">
-  @for (product of products(); track product.id) {
-    <mat-card appearance="outlined">
-      <mat-card-header>
-        <mat-card-title>{{ product.name }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ product.description }}</p>
-        <p class="price">{{ product.price | currency: 'BRL' }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button type="button" (click)="addToCart(product)">
-          Adicionar ao Carrinho
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  }
+<main>
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    @for (category of productsByCategory(); track category.id) {
+      <mat-tab [label]="category.label">
+        @if (category.products.length) {
+          <div class="products">
+            @for (product of category.products; track product.id) {
+              <mat-card appearance="outlined">
+                <mat-card-header>
+                  <mat-card-title>{{ product.name }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>{{ product.description }}</p>
+                  <p class="price">{{ product.price | currency: 'BRL' }}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                  <button mat-flat-button type="button" (click)="addToCart(product)">Adicionar ao Carrinho</button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        } @else {
+          <p class="empty">Nenhum produto disponível nesta categoria.</p>
+        }
+      </mat-tab>
+    }
+  </mat-tab-group>
 </main>

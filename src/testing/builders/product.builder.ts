@@ -1,4 +1,4 @@
-import type { Product } from '../../app/shared/models/product.model';
+import type { Product, ProductCategory } from '../../app/shared/models/product.model';
 import { MOCK_PRODUCTS } from '../../mocks/data/products';
 
 export class ProductBuilder {
@@ -21,6 +21,11 @@ export class ProductBuilder {
 
   withPrice(price: number): this {
     this.product.price = price;
+    return this;
+  }
+
+  withCategory(category: ProductCategory): this {
+    this.product.category = category;
     return this;
   }
 

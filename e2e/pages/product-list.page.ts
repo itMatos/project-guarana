@@ -3,17 +3,28 @@ import type { Locator, Page } from '@playwright/test';
 export class ProductListPage {
   readonly logoutButton: Locator;
   readonly addToCartButtons: Locator;
+  readonly emptyCategoryMessage: Locator;
   private readonly list: Locator;
 
   constructor(private readonly page: Page) {
     this.logoutButton = page.getByRole('button', { name: 'Sair' });
     this.list = page.getByRole('main');
     // Cada produto renderiza exatamente um botão: serve para contar os itens.
+    // Só a aba ativa fica no DOM, então a contagem é da categoria selecionada.
     this.addToCartButtons = this.list.getByRole('button', { name: 'Adicionar ao Carrinho' });
+    this.emptyCategoryMessage = this.list.getByText('Nenhum produto disponível nesta categoria.');
   }
 
   async goto(): Promise<void> {
     await this.page.goto('/store/products');
+  }
+
+  categoryTab(label: string): Locator {
+    return this.list.getByRole('tab', { name: label });
+  }
+
+  async selectCategory(label: string): Promise<void> {
+    await this.categoryTab(label).click();
   }
 
   product(name: string): Locator {

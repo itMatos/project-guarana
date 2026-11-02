@@ -50,9 +50,16 @@ describe('MSW handlers', () => {
     expect((await products())?.status).toBe(401);
   });
 
-  it('lists 6 products with a valid token', async () => {
+  it('lists 9 products with a valid token', async () => {
     const res = await products('mock-token-standard_user');
     expect(res?.status).toBe(200);
-    expect(await res?.json()).toHaveLength(6);
+    expect(await res?.json()).toHaveLength(9);
+  });
+
+  it('lists 3 products in each category', async () => {
+    const list: { category: string }[] = await (await products('mock-token-standard_user'))!.json();
+    for (const category of ['celulares', 'notebooks', 'tablets']) {
+      expect(list.filter((product) => product.category === category)).toHaveLength(3);
+    }
   });
 });

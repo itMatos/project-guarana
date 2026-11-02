@@ -1,22 +1,29 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ProductApiService } from '../../../core/api/product/product-api.service';
-import { Product } from '../../../shared/models/product.model';
+import { Product, PRODUCT_CATEGORIES } from '../../../shared/models/product.model';
 import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CurrencyPipe, MatToolbarModule, MatCardModule, MatButtonModule],
+  imports: [CurrencyPipe, MatToolbarModule, MatTabsModule, MatCardModule, MatButtonModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
 })
 export class ProductListComponent implements OnInit {
   readonly products = signal<Product[]>([]);
+  readonly productsByCategory = computed(() =>
+    PRODUCT_CATEGORIES.map((category) => ({
+      ...category,
+      products: this.products().filter((product) => product.category === category.id)
+    }))
+  );
 
   constructor(
     private readonly router: Router,
