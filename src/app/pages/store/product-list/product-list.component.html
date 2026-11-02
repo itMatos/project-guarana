@@ -8,7 +8,9 @@
   <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
     @for (category of productsByCategory(); track category.id) {
       <mat-tab [label]="category.label">
-        @if (category.products.length) {
+        @if (loading()) {
+          <mat-spinner class="loading" diameter="40" aria-label="Carregando produtos"></mat-spinner>
+        } @else if (category.products.length) {
           <div class="products">
             @for (product of category.products; track product.id) {
               <mat-card appearance="outlined">

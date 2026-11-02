@@ -4,6 +4,7 @@ import { Component, computed, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ProductApiService } from '../../../core/api/product/product-api.service';
@@ -12,12 +13,13 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CurrencyPipe, MatToolbarModule, MatTabsModule, MatCardModule, MatButtonModule],
+  imports: [CurrencyPipe, MatToolbarModule, MatTabsModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
 })
 export class ProductListComponent implements OnInit {
   readonly products = signal<Product[]>([]);
+  readonly loading = signal(true);
   readonly productsByCategory = computed(() =>
     PRODUCT_CATEGORIES.map((category) => ({
       ...category,
@@ -33,8 +35,12 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.productApi.getProducts().subscribe({
-      next: (products) => this.products.set(products),
+      next: (products) => {
+        this.products.set(products);
+        this.loading.set(false);
+      },
       error: (error: HttpErrorResponse) => {
+        this.loading.set(false);
         if (error.status === 401) {
           this.logout();
         }
